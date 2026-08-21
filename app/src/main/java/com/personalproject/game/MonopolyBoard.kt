@@ -683,11 +683,11 @@ class MonopolyBoard @JvmOverloads constructor(
             playerInfoPaint.isFakeBoldText = isCur
             canvas.drawText(player.name.substringAfter(" "), 36f, iy + 7f, playerInfoPaint)
 
-            playerMoneyPaint.text = "$${player.money}"
-            canvas.drawText(playerMoneyPaint.text, 140f, iy + 7f, playerMoneyPaint)
+            val moneyText = "$${player.money}"
+            canvas.drawText(moneyText, 140f, iy + 7f, playerMoneyPaint)
 
-            playerTerritoryPaint.text = "${player.properties.size} territories"
-            canvas.drawText(playerTerritoryPaint.text, 210f, iy + 7f, playerTerritoryPaint)
+            val territoryText = "${player.properties.size} territories"
+            canvas.drawText(territoryText, 210f, iy + 7f, playerTerritoryPaint)
         }
         playerInfoPaint.isFakeBoldText = false
     }
