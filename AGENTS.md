@@ -3,12 +3,15 @@
 Game Monopoly dengan tema World War 2 untuk Android.
 
 ## Fitur
-- 40 kotak papan bertema WW2 (Berlin, Moscow, London, Tokyo, dll)
+- 80 kotak papan simetris (4 corners + 4x19 edges) bertema WW2
+- Grid 21x21, Berlin, Moscow, London, Tokyo, dll
 - 2-4 pemain (Commander)
-- Event Card & Chance Card
+- Event Card, Chance Card, & Surprise Card
 - Sistem properti & sewa
 - Token: Tank, Plane, Ship, Sub, Jeep, Soldier
 - Uang: War Bonds
+- Penjara dengan mekanik bail/doubles
+- Ambush Zone, Fortune squares
 
 ## Build
 ```bash

@@ -93,7 +93,6 @@ class MainActivity : AppCompatActivity() {
         } else if (!hasRolled) {
             val result = board.rollDice()
             hasRolled = true
-            rollButton.text = "MOVE"
 
             diceContainer.visibility = View.VISIBLE
             die1Text.text = "${result.die1}"
@@ -104,6 +103,16 @@ class MainActivity : AppCompatActivity() {
             } else {
                 messageText.text = "Rolled ${result.total}"
             }
+
+            if (!board.isWaitingForMove()) {
+                hasRolled = false
+                rollButton.visibility = View.GONE
+                actionButton.visibility = View.VISIBLE
+                actionButton.text = "NEXT TURN"
+                diceContainer.visibility = View.GONE
+            } else {
+                rollButton.text = "MOVE"
+            }
         }
     }
 
@@ -113,11 +122,14 @@ class MainActivity : AppCompatActivity() {
         hasMoved = false
         rollButton.text = "ROLL DICE"
         rollButton.visibility = View.VISIBLE
+        actionButton.text = "NEXT TURN"
         actionButton.visibility = View.GONE
         diceContainer.visibility = View.GONE
 
         val player = board.getCurrentPlayer()
-        statusText.text = "${player?.name}'s turn"
-        messageText.text = "Roll the dice, Commander!"
+        if (board.isWaitingForMove().not() && player != null) {
+            statusText.text = "${player.name}'s turn"
+            messageText.text = "Roll the dice, Commander!"
+        }
     }
 }
