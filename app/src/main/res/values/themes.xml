@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.SnakeGame" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#FF4CAF50</item>
+        <item name="colorPrimaryVariant">#FF2E7D32</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:statusBarColor">#FF0F0F23</item>
+        <item name="android:navigationBarColor">#FF0F0F23</item>
+    </style>
+</resources>
