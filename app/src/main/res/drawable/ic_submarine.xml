@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Hull -->
+    <path
+        android:fillColor="#455A64"
+        android:pathData="M8,24 L40,24 L42,32 L6,32 Z" />
+    <!-- Conning tower -->
+    <path
+        android:fillColor="#37474F"
+        android:pathData="M20,18 L28,18 L28,24 L20,24 Z" />
+    <!-- Periscope -->
+    <path
+        android:fillColor="#616161"
+        android:pathData="M23,10 L25,10 L25,18 L23,18 Z" />
+    <path
+        android:fillColor="#616161"
+        android:pathData="M22,8 L26,8 L26,10 L22,10 Z" />
+    <!-- Propeller -->
+    <path
+        android:fillColor="#78909C"
+        android:pathData="M40,26 L46,22 L46,34 L40,30 Z" />
+    <path
+        android:fillColor="#78909C"
+        android:pathData="M40,28 L44,24 L44,32 L40,28 Z" />
+    <!-- Torpedo tubes -->
+    <path
+        android:fillColor="#546E7A"
+        android:pathData="M6,26 L10,26 L10,30 L6,30 Z" />
+    <!-- Windows -->
+    <path
+        android:fillColor="#BBDEFB"
+        android:pathData="M22,20 L26,20 L26,22 L22,22 Z" />
+</vector>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Tank body -->
+    <path
+        android:fillColor="#2E7D32"
+        android:pathData="M8,28 L40,28 L42,32 L6,32 Z" />
+    <path
+        android:fillColor="#388E3C"
+        android:pathData="M10,24 L38,24 L40,28 L8,28 Z" />
+    <!-- Tank turret -->
+    <path
+        android:fillColor="#1B5E20"
+        android:pathData="M18,20 L30,20 L32,24 L16,24 Z" />
+    <!-- Tank barrel -->
+    <path
+        android:fillColor="#424242"
+        android:pathData="M22,18 L26,18 L26,20 L22,20 Z" />
+    <!-- Tank wheels -->
+    <path
+        android:fillColor="#424242"
+        android:pathData="M10,32 A4,4 0 1,1 18,32 A4,4 0 1,1 10,32" />
+    <path
+        android:fillColor="#424242"
+        android:pathData="M20,32 A4,4 0 1,1 28,32 A4,4 0 1,1 20,32" />
+    <path
+        android:fillColor="#424242"
+        android:pathData="M30,32 A4,4 0 1,1 38,32 A4,4 0 1,1 30,32" />
+    <!-- Tank tracks -->
+    <path
+        android:fillColor="#616161"
+        android:pathData="M6,34 L42,34 L42,36 L6,36 Z" />
+</vector>

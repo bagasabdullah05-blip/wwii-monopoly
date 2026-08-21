@@ -3,15 +3,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#0D1B0D">
+    android:background="@drawable/bg_game">
 
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
-        android:background="#1A2E1A"
-        android:gravity="center_vertical">
+        android:padding="12dp"
+        android:background="@drawable/bg_header"
+        android:gravity="center_vertical"
+        android:elevation="4dp">
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_tank"
+            android:layout_marginEnd="8dp" />
 
         <TextView
             android:layout_width="0dp"
@@ -19,8 +27,12 @@
             android:layout_weight="1"
             android:text="WWII MONOPOLY"
             android:textColor="#FFD700"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:shadowColor="#000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2" />
 
         <TextView
             android:id="@+id/statusText"
@@ -28,51 +40,124 @@
             android:layout_height="wrap_content"
             android:text="Preparing..."
             android:textColor="#AAAAAA"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
     </LinearLayout>
 
+    <!-- Board -->
     <FrameLayout
         android:id="@+id/boardContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_margin="4dp" />
 
+    <!-- Bottom Panel -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:background="#1A2E1A"
-        android:gravity="center">
+        android:orientation="vertical"
+        android:background="@drawable/bg_header"
+        android:padding="12dp"
+        android:elevation="4dp">
 
+        <!-- Message Area -->
         <TextView
-            android:id="@+id/rollButton"
-            android:layout_width="wrap_content"
+            android:id="@+id/messageText"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ROLL DICE"
-            android:textColor="#000000"
-            android:textSize="16sp"
+            android:text="Welcome, Commander!"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
             android:textStyle="bold"
-            android:paddingHorizontal="32dp"
-            android:paddingVertical="16dp"
-            android:background="#4CAF50" />
+            android:gravity="center"
+            android:paddingBottom="8dp"
+            android:shadowColor="#000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2" />
 
-        <View
-            android:layout_width="16dp"
-            android:layout_height="0dp" />
-
-        <TextView
-            android:id="@+id/actionButton"
-            android:layout_width="wrap_content"
+        <!-- Dice Display -->
+        <LinearLayout
+            android:id="@+id/diceContainer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="NEXT TURN"
-            android:textColor="#000000"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:paddingHorizontal="24dp"
-            android:paddingVertical="12dp"
-            android:background="#FFD700"
-            android:visibility="gone" />
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingBottom="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/die1Text"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:gravity="center"
+                android:text="1"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_card"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/die2Text"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:gravity="center"
+                android:text="1"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_card" />
+        </LinearLayout>
+
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/rollButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="ROLL DICE"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:padding="14dp"
+                android:background="@drawable/btn_roll"
+                android:elevation="4dp"
+                android:shadowColor="#000000"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="3" />
+
+            <View
+                android:layout_width="12dp"
+                android:layout_height="0dp" />
+
+            <TextView
+                android:id="@+id/actionButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="NEXT TURN"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:padding="14dp"
+                android:background="@drawable/btn_next"
+                android:visibility="gone"
+                android:elevation="4dp"
+                android:shadowColor="#000000"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="3" />
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

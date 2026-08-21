@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Fuselage -->
+    <path
+        android:fillColor="#1565C0"
+        android:pathData="M24,8 L28,16 L28,36 L24,40 L20,36 L20,16 Z" />
+    <!-- Wings -->
+    <path
+        android:fillColor="#1976D2"
+        android:pathData="M4,22 L20,18 L20,26 L4,30 Z" />
+    <path
+        android:fillColor="#1976D2"
+        android:pathData="M44,22 L28,18 L28,26 L44,30 Z" />
+    <!-- Tail -->
+    <path
+        android:fillColor="#1976D2"
+        android:pathData="M16,36 L24,32 L32,36 L28,40 L20,40 Z" />
+    <!-- Cockpit -->
+    <path
+        android:fillColor="#BBDEFB"
+        android:pathData="M22,12 L26,12 L26,18 L22,18 Z" />
+    <!-- Nose -->
+    <path
+        android:fillColor="#0D47A1"
+        android:pathData="M22,8 L26,8 L24,4 Z" />
+</vector>

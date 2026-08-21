@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
@@ -11,8 +12,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var board: MonopolyBoard
     private lateinit var statusText: TextView
+    private lateinit var messageText: TextView
     private lateinit var rollButton: TextView
     private lateinit var actionButton: TextView
+    private lateinit var diceContainer: LinearLayout
+    private lateinit var die1Text: TextView
+    private lateinit var die2Text: TextView
     private var hasRolled = false
     private var hasMoved = false
     private var playerCount = 0
@@ -27,8 +32,12 @@ class MainActivity : AppCompatActivity() {
 
         board = MonopolyBoard(this)
         statusText = findViewById(R.id.statusText)
+        messageText = findViewById(R.id.messageText)
         rollButton = findViewById(R.id.rollButton)
         actionButton = findViewById(R.id.actionButton)
+        diceContainer = findViewById(R.id.diceContainer)
+        die1Text = findViewById(R.id.die1Text)
+        die2Text = findViewById(R.id.die2Text)
 
         val container = findViewById<FrameLayout>(R.id.boardContainer)
         container.addView(board)
@@ -37,7 +46,9 @@ class MainActivity : AppCompatActivity() {
         actionButton.setOnClickListener { onNextTurnClicked() }
 
         board.onGameEvent = { event, _ ->
-            runOnUiThread { statusText.text = event }
+            runOnUiThread {
+                messageText.text = event
+            }
         }
     }
 
@@ -58,7 +69,8 @@ class MainActivity : AppCompatActivity() {
                 playerCount = which + 2
                 board.initPlayers(playerCount)
                 val player = board.getCurrentPlayer()
-                statusText.text = "${player?.name}'s turn - Roll the dice!"
+                statusText.text = "${player?.name}'s turn"
+                messageText.text = "Roll the dice, Commander!"
             }
             .setCancelable(false)
             .show()
@@ -77,13 +89,21 @@ class MainActivity : AppCompatActivity() {
             val player = board.getCurrentPlayer()
             val pos = player?.position ?: 0
             val square = GameConfig.BOARD[pos]
-            statusText.text = "${player?.name} landed on ${square.name}"
+            messageText.text = "${player?.name} landed on ${square.name}"
         } else if (!hasRolled) {
-            board.rollDice()
+            val result = board.rollDice()
             hasRolled = true
             rollButton.text = "MOVE"
-            val player = board.getCurrentPlayer()
-            statusText.text = "${player?.name} is moving..."
+
+            diceContainer.visibility = View.VISIBLE
+            die1Text.text = "${result.die1}"
+            die2Text.text = "${result.die2}"
+
+            if (result.isDouble) {
+                messageText.text = "DOUBLE! ${result.total}"
+            } else {
+                messageText.text = "Rolled ${result.total}"
+            }
         }
     }
 
@@ -94,8 +114,10 @@ class MainActivity : AppCompatActivity() {
         rollButton.text = "ROLL DICE"
         rollButton.visibility = View.VISIBLE
         actionButton.visibility = View.GONE
+        diceContainer.visibility = View.GONE
 
         val player = board.getCurrentPlayer()
-        statusText.text = "${player?.name}'s turn - Roll the dice!"
+        statusText.text = "${player?.name}'s turn"
+        messageText.text = "Roll the dice, Commander!"
     }
 }
