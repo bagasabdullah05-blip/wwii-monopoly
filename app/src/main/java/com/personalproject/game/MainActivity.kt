@@ -18,10 +18,10 @@ class MainActivity : Activity() {
     private lateinit var diceContainer: LinearLayout
     private lateinit var die1Text: TextView
     private lateinit var die2Text: TextView
+    private lateinit var selectPanel: View
     private var hasRolled = false
     private var hasMoved = false
     private var playerCount = 0
-    private var dialogShown = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,12 +38,17 @@ class MainActivity : Activity() {
         diceContainer = findViewById(R.id.diceContainer)
         die1Text = findViewById(R.id.die1Text)
         die2Text = findViewById(R.id.die2Text)
+        selectPanel = findViewById(R.id.selectPanel)
 
         val container = findViewById<FrameLayout>(R.id.boardContainer)
         container.addView(board)
 
         rollButton.setOnClickListener { onRollClicked() }
         actionButton.setOnClickListener { onNextTurnClicked() }
+
+        findViewById<TextView>(R.id.btn2Players).setOnClickListener { startGame(2) }
+        findViewById<TextView>(R.id.btn3Players).setOnClickListener { startGame(3) }
+        findViewById<TextView>(R.id.btn4Players).setOnClickListener { startGame(4) }
 
         board.onGameEvent = { event, _ ->
             runOnUiThread {
@@ -52,28 +57,13 @@ class MainActivity : Activity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (!dialogShown) {
-            dialogShown = true
-            showPlayerCountDialog()
-        }
-    }
-
-    private fun showPlayerCountDialog() {
-        val options = arrayOf("2 Commanders", "3 Commanders", "4 Commanders")
-        android.app.AlertDialog.Builder(this)
-            .setTitle("Select Forces")
-            .setMessage("How many commanders will compete for world dominance?")
-            .setItems(options) { _, which ->
-                playerCount = which + 2
-                board.initPlayers(playerCount)
-                val player = board.getCurrentPlayer()
-                statusText.text = "${player?.name}'s turn"
-                messageText.text = "Roll the dice, Commander!"
-            }
-            .setCancelable(false)
-            .show()
+    private fun startGame(count: Int) {
+        playerCount = count
+        board.initPlayers(count)
+        selectPanel.visibility = View.GONE
+        val player = board.getCurrentPlayer()
+        statusText.text = "${player?.name}'s turn"
+        messageText.text = "Roll the dice, Commander!"
     }
 
     private fun onRollClicked() {

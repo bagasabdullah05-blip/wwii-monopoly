@@ -43,13 +43,83 @@
             android:textSize="11sp" />
     </LinearLayout>
 
-    <!-- Board -->
+    <!-- Board + Player Select Overlay -->
     <FrameLayout
-        android:id="@+id/boardContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_margin="4dp" />
+        android:layout_margin="4dp">
+
+        <FrameLayout
+            android:id="@+id/boardContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:id="@+id/selectPanel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="#DD0D1B0D"
+            android:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SELECT FORCES"
+                android:textColor="#FFD700"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="How many commanders will compete?"
+                android:textColor="#CCCCCC"
+                android:textSize="14sp"
+                android:layout_marginBottom="24dp" />
+
+            <TextView
+                android:id="@+id/btn2Players"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:text="2 COMMANDERS"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:padding="16dp"
+                android:background="@drawable/btn_roll"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/btn3Players"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:text="3 COMMANDERS"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:padding="16dp"
+                android:background="@drawable/btn_roll"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/btn4Players"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:text="4 COMMANDERS"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:padding="16dp"
+                android:background="@drawable/btn_roll" />
+        </LinearLayout>
+    </FrameLayout>
 
     <!-- Bottom Panel -->
     <LinearLayout
