@@ -1,7 +1,11 @@
 package com.personalproject.game
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -20,95 +24,126 @@ class MonopolyBoard @JvmOverloads constructor(
     private var diceResult: DiceResult? = null
     private var message = "Roll the dice, Commander!"
     private var messageColor = Color.WHITE
-    private var boardRect = RectF()
     private var cellSize = 0f
-    private var boardPadding = 8f
-    private var selectedProperty: BoardSquare? = null
-    private var showPropertyDialog = false
 
     enum class GameState {
-        WAITING_ROLL, SHOWING_DICE, MOVING, SHOWING_CARD, GAME_OVER
+        WAITING_ROLL, SHOWING_DICE, GAME_OVER
     }
 
     var onGameEvent: ((String, Int) -> Unit)? = null
 
-    private val bgPaint = Paint().apply {
+    private val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#1B2A1B")
         style = Paint.Style.FILL
     }
 
-    private val cellPaint = Paint().apply {
+    private val cellPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#1A2E1A")
         style = Paint.Style.FILL
     }
 
-    private val cellBorderPaint = Paint().apply {
+    private val cellBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#3E5C3E")
         style = Paint.Style.STROKE
         strokeWidth = 2f
     }
 
-    private val textPaint = Paint().apply {
+    private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
-        isAntiAlias = true
+        textSize = 9f
+        textAlign = Paint.Align.CENTER
     }
 
-    private val groupPaint = Paint().apply {
+    private val groupPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
     }
 
-    private val playerPaint = Paint().apply {
+    private val playerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
-        isAntiAlias = true
+        color = Color.WHITE
     }
 
-    private val dicePaint = Paint().apply {
+    private val playerBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
+        style = Paint.Style.STROKE
+        strokeWidth = 2f
+    }
+
+    private val dicePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
         style = Paint.Style.FILL
-        isAntiAlias = true
     }
 
-    private val diceBorderPaint = Paint().apply {
+    private val diceBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#888888")
         style = Paint.Style.STROKE
         strokeWidth = 4f
-        isAntiAlias = true
     }
 
-    private val cardPaint = Paint().apply {
-        color = Color.parseColor("#2C2C2C")
-        style = Paint.Style.FILL
-        isAntiAlias = true
-    }
-
-    private val cardBorderPaint = Paint().apply {
-        color = Color.parseColor("#8B7355")
-        style = Paint.Style.STROKE
-        strokeWidth = 4f
-        isAntiAlias = true
-    }
-
-    private val overlayPaint = Paint().apply {
-        color = Color.parseColor("#AA000000")
-        style = Paint.Style.FILL
-    }
-
-    private val starPaint = Paint().apply {
-        color = Color.parseColor("#FFD700")
-        style = Paint.Style.FILL
-        isAntiAlias = true
-    }
-
-    private val dotPaint = Paint().apply {
+    private val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.BLACK
         style = Paint.Style.FILL
-        isAntiAlias = true
     }
 
-    private val arrowPaint = Paint().apply {
-        color = Color.parseColor("#4CAF50")
+    private val starPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#FFD700")
         style = Paint.Style.FILL
-        isAntiAlias = true
     }
+
+    private val goldTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#FFD700")
+        textSize = 8f
+        textAlign = Paint.Align.CENTER
+    }
+
+    private val headerTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
+        textSize = 11f
+        textAlign = Paint.Align.CENTER
+    }
+
+    private val centerTitlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#FFD700")
+        textSize = 22f
+        textAlign = Paint.Align.CENTER
+        isFakeBoldText = true
+    }
+
+    private val centerSubPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#8B7355")
+        textSize = 16f
+        textAlign = Paint.Align.CENTER
+    }
+
+    private val centerHintPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#666666")
+        textSize = 11f
+        textAlign = Paint.Align.CENTER
+    }
+
+    private val messagePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textSize = 18f
+        textAlign = Paint.Align.LEFT
+        isFakeBoldText = true
+    }
+
+    private val playerInfoPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textSize = 12f
+        textAlign = Paint.Align.LEFT
+    }
+
+    private val playerInfoSmallPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textSize = 10f
+        textAlign = Paint.Align.LEFT
+        color = Color.parseColor("#AAAAAA")
+    }
+
+    private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0x33FFFFFF
+        style = Paint.Style.FILL
+    }
+
+    private val starPath = Path()
 
     init {
         setOnTouchListener { _, event ->
@@ -128,6 +163,7 @@ class MonopolyBoard @JvmOverloads constructor(
         currentPlayerIndex = 0
         gameState = GameState.WAITING_ROLL
         message = "${players[0].name}'s turn - Roll the dice!"
+        messageColor = Color.WHITE
         invalidate()
     }
 
@@ -138,6 +174,7 @@ class MonopolyBoard @JvmOverloads constructor(
         diceResult = result
         gameState = GameState.SHOWING_DICE
         message = "${players[currentPlayerIndex].name} rolled ${result.total}!"
+        messageColor = Color.WHITE
         invalidate()
         return result
     }
@@ -170,7 +207,6 @@ class MonopolyBoard @JvmOverloads constructor(
                         player.properties.add(player.position)
                         message = "${player.name} acquired ${square.name}! (-${square.price})"
                         messageColor = Color.parseColor("#4CAF50")
-                        player.history.add("Acquired ${square.name}")
                     } else {
                         message = "${player.name} cannot afford ${square.name} (${square.price})"
                         messageColor = Color.parseColor("#FF9800")
@@ -180,10 +216,10 @@ class MonopolyBoard @JvmOverloads constructor(
                     if (player.money >= rent) {
                         player.money -= rent
                         owner.money += rent
-                        message = "${player.name} pays ${rent} to ${owner.name} for ${square.name}"
+                        message = "${player.name} pays ${rent} to ${owner.name}"
                         messageColor = Color.parseColor("#F44336")
                     } else {
-                        message = "${player.name} is bankrupt! Cannot pay rent."
+                        message = "${player.name} is bankrupt!"
                         messageColor = Color.parseColor("#F44336")
                     }
                 }
@@ -194,14 +230,14 @@ class MonopolyBoard @JvmOverloads constructor(
                 message = card
                 messageColor = Color.parseColor("#FFD700")
                 applyEventEffect(player, card)
-                gameState = GameState.SHOWING_CARD
+                gameState = GameState.WAITING_ROLL
             }
             SquareType.CHANCE -> {
                 val card = GameConfig.CHANCE_CARDS[Random.nextInt(GameConfig.CHANCE_CARDS.size)]
                 message = card
                 messageColor = Color.parseColor("#FF9800")
                 applyChanceEffect(player, card)
-                gameState = GameState.SHOWING_CARD
+                return
             }
             SquareType.TAX -> {
                 val tax = if (square.name.contains("150")) 150 else 100
@@ -215,12 +251,11 @@ class MonopolyBoard @JvmOverloads constructor(
                     player.money -= 150
                     message = "${player.name} received draft notice! Pay 150"
                     messageColor = Color.parseColor("#F44336")
-                    gameState = GameState.WAITING_ROLL
                 } else {
                     message = "${player.name} reached ${square.name} - Safe zone!"
                     messageColor = Color.parseColor("#4CAF50")
-                    gameState = GameState.WAITING_ROLL
                 }
+                gameState = GameState.WAITING_ROLL
             }
             SquareType.PRISON -> {
                 if (player.position == 30) {
@@ -250,29 +285,23 @@ class MonopolyBoard @JvmOverloads constructor(
             card.contains("bonus") || card.contains("Collect") || card.contains("war bonds") || card.contains("aid") || card.contains("Medal") -> {
                 val amount = Random.nextInt(50, 200)
                 player.money += amount
-                player.history.add("Event: +$amount")
             }
             card.contains("repairs") || card.contains("costs") || card.contains("damage") || card.contains("shortage") -> {
                 val amount = Random.nextInt(30, 150)
                 player.money -= amount
-                player.history.add("Event: -$amount")
             }
             card.contains("forward 3") -> {
                 player.position = (player.position + 3) % GameConfig.BOARD.size
-                player.history.add("Event: +3 spaces")
             }
             card.contains("back 2") -> {
                 player.position = (player.position - 2 + GameConfig.BOARD.size) % GameConfig.BOARD.size
-                player.history.add("Event: -2 spaces")
             }
             card.contains("Go to Allied") -> {
                 player.position = 0
                 player.money += 200
-                player.history.add("Event: Back to Allied HQ")
             }
             card.contains("Normandy") -> {
                 player.position = 18
-                player.history.add("Event: Advance to Normandy")
             }
         }
     }
@@ -281,14 +310,12 @@ class MonopolyBoard @JvmOverloads constructor(
         when {
             card.contains("London") -> {
                 player.position = 1
-                val square = GameConfig.BOARD[1]
-                processSquare(player, square)
+                processSquare(player, GameConfig.BOARD[1])
                 return
             }
             card.contains("Berlin") -> {
                 player.position = 11
-                val square = GameConfig.BOARD[11]
-                processSquare(player, square)
+                processSquare(player, GameConfig.BOARD[11])
                 return
             }
             card.contains("Prison") -> {
@@ -298,32 +325,30 @@ class MonopolyBoard @JvmOverloads constructor(
                 message = "${player.name} sent to Axis Prison!"
                 messageColor = Color.parseColor("#F44336")
                 gameState = GameState.WAITING_ROLL
+                invalidate()
                 return
             }
-            card.contains("Allied HQ") -> {
+            card.contains("Allied HQ") && !card.contains("immediately") -> {
                 player.position = 0
                 player.money += 200
                 message = "${player.name} advances to Allied HQ! +200"
                 messageColor = Color.parseColor("#4CAF50")
                 gameState = GameState.WAITING_ROLL
+                invalidate()
                 return
             }
             card.contains("back 3") -> {
                 player.position = (player.position - 3 + GameConfig.BOARD.size) % GameConfig.BOARD.size
-                player.history.add("Chance: -3 spaces")
             }
             card.contains("Promoted") -> {
                 player.money += 150
-                player.history.add("Chance: +150")
             }
             card.contains("poor tax") -> {
                 player.money -= 75
-                player.history.add("Chance: -75")
             }
             card.contains("Allied HQ immediately") -> {
                 player.position = 0
                 player.money += 200
-                player.history.add("Chance: Back to Allied HQ")
             }
             card.contains("each player") -> {
                 val fee = 50
@@ -333,14 +358,12 @@ class MonopolyBoard @JvmOverloads constructor(
                         player.money += fee
                     }
                 }
-                player.history.add("Chance: Collected from all players")
             }
             card.contains("nearest") -> {
                 val nextProperty = listOf(6, 16, 26, 36).minByOrNull { pos ->
                     (pos - player.position + 40) % 40
                 } ?: 36
                 player.position = nextProperty
-                player.history.add("Chance: Advance to nearest base")
             }
         }
         gameState = GameState.WAITING_ROLL
@@ -381,16 +404,8 @@ class MonopolyBoard @JvmOverloads constructor(
     }
 
     fun getCurrentPlayer(): Player? = players.getOrNull(currentPlayerIndex)
-    fun getPlayers(): List<Player> = players.toList()
 
-    private fun handleTouch(x: Float, y: Float) {
-        if (gameState == GameState.GAME_OVER) return
-
-        if (showPropertyDialog) {
-            showPropertyDialog = false
-            invalidate()
-            return
-        }
+    private fun handleTouch(@Suppress("UNUSED_PARAMETER") x: Float, @Suppress("UNUSED_PARAMETER") y: Float) {
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -399,66 +414,37 @@ class MonopolyBoard @JvmOverloads constructor(
 
         val size = min(width, height).toFloat()
         cellSize = size / 13f
-        val offsetX = (width - size) / 2f
-        val offsetY = (height - size) / 2f + 20f
+        val ox = (width - size) / 2f
+        val oy = (height - size) / 2f + 20f
+        val cs = cellSize
+        val inner = cs * 11
 
-        boardRect = RectF(offsetX, offsetY, offsetX + size, offsetY + size)
+        drawCorner(canvas, ox, oy, "ALLIED\nHQ", Color.parseColor("#4CAF50"), true)
+        drawCorner(canvas, ox + inner + cs, oy, "AXIS\nPRISON", Color.parseColor("#F44336"), false)
+        drawCorner(canvas, ox + inner + cs, oy + inner + cs, "AXIS\nHQ", Color.parseColor("#9C27B0"), false)
+        drawCorner(canvas, ox, oy + inner + cs, "DRAFT\nNOTICE", Color.parseColor("#FF9800"), false)
 
-        drawBoard(canvas, offsetX, offsetY)
-        drawPlayers(canvas, offsetX, offsetY)
+        for (i in 1..10) drawCell(canvas, ox + inner + cs - i * cs, oy, cs, GameConfig.BOARD[i])
+        for (i in 1..10) drawCell(canvas, ox, oy + i * cs, cs, GameConfig.BOARD[10 + i])
+        for (i in 1..10) drawCell(canvas, ox + (i - 1) * cs, oy + inner + cs, cs, GameConfig.BOARD[30 - i])
+        for (i in 1..10) drawCell(canvas, ox + inner + cs, oy + inner - (i - 1) * cs, cs, GameConfig.BOARD[40 - i])
+
+        drawCenterInfo(canvas, ox + cs, oy + cs, cs * 11)
+        drawPlayers(canvas, ox, oy)
         drawUI(canvas)
     }
 
-    private fun drawBoard(canvas: Canvas, ox: Float, oy: Float) {
-        val cs = cellSize
-        val innerSize = cs * 11
-
-        canvas.drawRect(ox, oy, ox + cs * 13, oy + cs * 13, bgPaint)
-
-        drawCorner(canvas, ox, oy, "ALLIED\nHQ", Color.parseColor("#4CAF50"), true)
-        drawCorner(canvas, ox + innerSize + cs, oy, "AXIS\nPRISON", Color.parseColor("#F44336"), false)
-        drawCorner(canvas, ox + innerSize + cs, oy + innerSize + cs, "AXIS\nHQ", Color.parseColor("#9C27B0"), false)
-        drawCorner(canvas, ox, oy + innerSize + cs, "DRAFT\nNOTICE", Color.parseColor("#FF9800"), false)
-
-        for (i in 1..10) {
-            val square = GameConfig.BOARD[i]
-            drawCell(canvas, ox + innerSize + cs - i * cs, oy, cs, square, false)
-        }
-
-        for (i in 1..10) {
-            val square = GameConfig.BOARD[10 + i]
-            drawCell(canvas, ox, oy + i * cs, cs, square, true)
-        }
-
-        for (i in 1..10) {
-            val square = GameConfig.BOARD[30 - i]
-            drawCell(canvas, ox + (i - 1) * cs, oy + innerSize + cs, cs, square, false)
-        }
-
-        for (i in 1..10) {
-            val square = GameConfig.BOARD[40 - i]
-            drawCell(canvas, ox + innerSize + cs, oy + innerSize - (i - 1) * cs, cs, square, true)
-        }
-
-        drawCenterInfo(canvas, ox + cs, oy + cs, cs * 11)
-    }
-
     private fun drawCorner(canvas: Canvas, x: Float, y: Float, text: String, color: Int, isStar: Boolean) {
-        cellPaint.color = Color.parseColor("#1A2E1A")
         canvas.drawRect(x, y, x + cellSize, y + cellSize, cellPaint)
         canvas.drawRect(x, y, x + cellSize, y + cellSize, cellBorderPaint)
 
         groupPaint.color = color
         canvas.drawRect(x, y, x + cellSize, y + 6f, groupPaint)
 
-        textPaint.textSize = 11f
-        textPaint.color = Color.WHITE
-        textPaint.textAlign = Paint.Align.CENTER
-
         val lines = text.split("\n")
         val textY = y + cellSize / 2f - (lines.size - 1) * 7f
         lines.forEachIndexed { index, line ->
-            canvas.drawText(line, x + cellSize / 2f, textY + index * 14f, textPaint)
+            canvas.drawText(line, x + cellSize / 2f, textY + index * 14f, headerTextPaint)
         }
 
         if (isStar) {
@@ -467,7 +453,7 @@ class MonopolyBoard @JvmOverloads constructor(
     }
 
     private fun drawStar(canvas: Canvas, cx: Float, cy: Float, r: Float) {
-        val path = Path()
+        starPath.reset()
         for (i in 0 until 5) {
             val outerAngle = Math.toRadians((i * 72 - 90).toDouble())
             val innerAngle = Math.toRadians(((i * 72 + 36) - 90).toDouble())
@@ -475,25 +461,20 @@ class MonopolyBoard @JvmOverloads constructor(
             val outerY = cy + (r * Math.sin(outerAngle)).toFloat()
             val innerX = cx + (r * 0.4f * Math.cos(innerAngle)).toFloat()
             val innerY = cy + (r * 0.4f * Math.sin(innerAngle)).toFloat()
-            if (i == 0) path.moveTo(outerX, outerY) else path.lineTo(outerX, outerY)
-            path.lineTo(innerX, innerY)
+            if (i == 0) starPath.moveTo(outerX, outerY) else starPath.lineTo(outerX, outerY)
+            starPath.lineTo(innerX, innerY)
         }
-        path.close()
-        canvas.drawPath(path, starPaint)
+        starPath.close()
+        canvas.drawPath(starPath, starPaint)
     }
 
-    private fun drawCell(canvas: Canvas, x: Float, y: Float, size: Float, square: BoardSquare, vertical: Boolean) {
-        cellPaint.color = Color.parseColor("#1A2E1A")
+    private fun drawCell(canvas: Canvas, x: Float, y: Float, size: Float, square: BoardSquare) {
         canvas.drawRect(x, y, x + size, y + size, cellPaint)
         canvas.drawRect(x, y, x + size, y + size, cellBorderPaint)
 
         if (square.groupColor != 0) {
             groupPaint.color = square.groupColor
-            if (vertical) {
-                canvas.drawRect(x, y, x + 6f, y + size, groupPaint)
-            } else {
-                canvas.drawRect(x, y, x + size, y + 6f, groupPaint)
-            }
+            canvas.drawRect(x, y, x + size, y + 6f, groupPaint)
         }
 
         when (square.type) {
@@ -512,101 +493,73 @@ class MonopolyBoard @JvmOverloads constructor(
             else -> {}
         }
 
-        textPaint.textSize = 9f
-        textPaint.color = Color.WHITE
-        textPaint.textAlign = Paint.Align.CENTER
-
-        val name = square.name
-        val words = name.split(" ")
+        val words = square.name.split(" ")
         val lineHeight = 11f
         val totalHeight = words.size * lineHeight
-        var textY = y + size / 2f - totalHeight / 2f + lineHeight
+        var ty = y + size / 2f - totalHeight / 2f + lineHeight
 
         for (word in words) {
-            canvas.drawText(word, x + size / 2f, textY, textPaint)
-            textY += lineHeight
+            canvas.drawText(word, x + size / 2f, ty, textPaint)
+            ty += lineHeight
         }
 
         if (square.price > 0) {
-            textPaint.textSize = 8f
-            textPaint.color = Color.parseColor("#FFD700")
-            canvas.drawText("${square.price}", x + size / 2f, y + size - 10f, textPaint)
+            canvas.drawText("${square.price}", x + size / 2f, y + size - 10f, goldTextPaint)
         }
     }
 
     private fun drawPlayers(canvas: Canvas, ox: Float, oy: Float) {
         val cs = cellSize
-        val innerSize = cs * 11
+        val inner = cs * 11
 
-        players.forEachIndexed { playerIndex, player ->
+        players.forEachIndexed { pi, player ->
             val pos = player.position
             var px = 0f
             var py = 0f
 
             when {
-                pos == 0 -> { px = ox + 4f + playerIndex * 8f; py = oy + innerSize + cs - 16f - playerIndex * 6f }
-                pos in 1..10 -> { px = ox + innerSize + cs - pos * cs + 4f + playerIndex * 7f; py = oy + cs - 14f }
-                pos in 11..20 -> { px = ox + cs - 14f; py = oy + (pos - 10) * cs + 4f + playerIndex * 7f }
-                pos in 21..30 -> { px = ox + (pos - 20) * cs + 4f + playerIndex * 7f; py = oy + innerSize + cs - 14f }
-                pos in 31..39 -> { px = ox + innerSize + cs - 14f; py = oy + innerSize - (pos - 30) * cs + 4f + playerIndex * 7f }
+                pos == 0 -> { px = ox + 4f + pi * 8f; py = oy + inner + cs - 16f - pi * 6f }
+                pos in 1..10 -> { px = ox + inner + cs - pos * cs + 4f + pi * 7f; py = oy + cs - 14f }
+                pos in 11..20 -> { px = ox + cs - 14f; py = oy + (pos - 10) * cs + 4f + pi * 7f }
+                pos in 21..30 -> { px = ox + (pos - 20) * cs + 4f + pi * 7f; py = oy + inner + cs - 14f }
+                pos in 31..39 -> { px = ox + inner + cs - 14f; py = oy + inner - (pos - 30) * cs + 4f + pi * 7f }
             }
 
             playerPaint.color = player.tokenColor
             canvas.drawCircle(px + 6f, py + 6f, 6f, playerPaint)
-
-            val borderPaint = Paint().apply {
-                color = Color.WHITE
-                style = Paint.Style.STROKE
-                strokeWidth = 2f
-                isAntiAlias = true
-            }
-            canvas.drawCircle(px + 6f, py + 6f, 6f, borderPaint)
+            canvas.drawCircle(px + 6f, py + 6f, 6f, playerBorderPaint)
         }
     }
 
     private fun drawCenterInfo(canvas: Canvas, x: Float, y: Float, size: Float) {
-        val centerY = y + size / 2f
+        val cy = y + size / 2f
 
-        textPaint.textSize = 22f
-        textPaint.color = Color.parseColor("#FFD700")
-        textPaint.textAlign = Paint.Align.CENTER
-        textPaint.isFakeBoldText = true
-        canvas.drawText("WORLD WAR II", x + size / 2f, centerY - 50f, textPaint)
+        canvas.drawText("WORLD WAR II", x + size / 2f, cy - 50f, centerTitlePaint)
+        canvas.drawText("MONOPOLY", x + size / 2f, cy - 28f, centerSubPaint)
 
-        textPaint.textSize = 16f
-        textPaint.color = Color.parseColor("#8B7355")
-        canvas.drawText("MONOPOLY", x + size / 2f, centerY - 28f, textPaint)
-        textPaint.isFakeBoldText = false
+        drawStar(canvas, x + size / 2f - 40f, cy, 10f)
+        drawStar(canvas, x + size / 2f, cy - 8f, 12f)
+        drawStar(canvas, x + size / 2f + 40f, cy, 10f)
 
-        drawStar(canvas, x + size / 2f - 40f, centerY, 10f)
-        drawStar(canvas, x + size / 2f, centerY - 8f, 12f)
-        drawStar(canvas, x + size / 2f + 40f, centerY, 10f)
-
-        textPaint.textSize = 11f
-        textPaint.color = Color.parseColor("#666666")
         val currentPlayer = players.getOrNull(currentPlayerIndex)
         if (currentPlayer != null) {
-            canvas.drawText("${currentPlayer.name}", x + size / 2f, centerY + 30f, textPaint)
+            canvas.drawText(currentPlayer.name, x + size / 2f, cy + 30f, centerHintPaint)
         }
 
-        canvas.drawText("Tap to Roll", x + size / 2f, centerY + 48f, textPaint)
+        canvas.drawText("Tap ROLL DICE below", x + size / 2f, cy + 48f, centerHintPaint)
     }
 
     private fun drawUI(canvas: Canvas) {
-        textPaint.textAlign = Paint.Align.LEFT
-        textPaint.isFakeBoldText = true
-
-        textPaint.textSize = 18f
-        textPaint.color = messageColor
-        val maxTextWidth = width - 40f
+        messagePaint.color = messageColor
+        val maxW = width - 40f
         val words = message.split(" ")
         var line = ""
         var lineY = height - 120f
 
         for (word in words) {
             val testLine = if (line.isEmpty()) word else "$line $word"
-            if (textPaint.measureText(testLine) > maxTextWidth && line.isNotEmpty()) {
-                canvas.drawText(line, 20f, lineY, textPaint)
+            if (messagePaint.measureText(testLine) > maxW && line.isNotEmpty()) {
+                canvas.drawText(line, 20f, lineY, messagePaint)
                 lineY += 22f
                 line = word
             } else {
@@ -614,25 +567,40 @@ class MonopolyBoard @JvmOverloads constructor(
             }
         }
         if (line.isNotEmpty()) {
-            canvas.drawText(line, 20f, lineY, textPaint)
+            canvas.drawText(line, 20f, lineY, messagePaint)
         }
 
-        drawDicePanel(canvas)
-        drawPlayerInfo(canvas)
-
-        textPaint.isFakeBoldText = false
-    }
-
-    private fun drawDicePanel(canvas: Canvas) {
         val dice = diceResult
         if (dice != null && gameState == GameState.SHOWING_DICE) {
-            val diceSize = 50f
-            val diceX = width / 2f - diceSize - 10f
-            val diceY = height - 110f
-
-            drawDie(canvas, diceX, diceY, diceSize, dice.die1)
-            drawDie(canvas, diceX + diceSize + 20f, diceY, diceSize, dice.die2)
+            val ds = 50f
+            val dx = width / 2f - ds - 10f
+            val dy = height - 110f
+            drawDie(canvas, dx, dy, ds, dice.die1)
+            drawDie(canvas, dx + ds + 20f, dy, ds, dice.die2)
         }
+
+        val startY = 20f
+        players.forEachIndexed { index, player ->
+            val iy = startY + index * 28f
+            val isCur = index == currentPlayerIndex
+
+            if (isCur) {
+                canvas.drawRect(10f, iy - 14f, width - 10f, iy + 14f, highlightPaint)
+            }
+
+            playerPaint.color = player.tokenColor
+            canvas.drawCircle(24f, iy, 8f, playerPaint)
+
+            playerInfoPaint.color = if (isCur) Color.parseColor("#FFD700") else Color.WHITE
+            playerInfoPaint.isFakeBoldText = isCur
+            canvas.drawText(player.name.substringAfter(" "), 40f, iy + 5f, playerInfoPaint)
+
+            playerInfoPaint.color = Color.parseColor("#4CAF50")
+            canvas.drawText("${player.money}", 120f, iy + 5f, playerInfoPaint)
+
+            canvas.drawText("${player.properties.size} territories", 190f, iy + 5f, playerInfoSmallPaint)
+        }
+        playerInfoPaint.isFakeBoldText = false
     }
 
     private fun drawDie(canvas: Canvas, x: Float, y: Float, size: Float, value: Int) {
@@ -680,36 +648,6 @@ class MonopolyBoard @JvmOverloads constructor(
         }
     }
 
-    private fun drawPlayerInfo(canvas: Canvas) {
-        val startY = 20f
-        textPaint.textAlign = Paint.Align.LEFT
-        textPaint.textSize = 12f
-
-        players.forEachIndexed { index, player ->
-            val y = startY + index * 28f
-            val isCurrent = index == currentPlayerIndex
-
-            if (isCurrent) {
-                groupPaint.color = Color.parseColor("#33FFFFFF")
-                canvas.drawRect(10f, y - 14f, width - 10f, y + 14f, groupPaint)
-            }
-
-            playerPaint.color = player.tokenColor
-            canvas.drawCircle(24f, y, 8f, playerPaint)
-
-            textPaint.color = if (isCurrent) Color.parseColor("#FFD700") else Color.WHITE
-            textPaint.isFakeBoldText = isCurrent
-            canvas.drawText(player.name.substringAfter(" "), 40f, y + 5f, textPaint)
-
-            textPaint.color = Color.parseColor("#4CAF50")
-            canvas.drawText("${player.money}", 120f, y + 5f, textPaint)
-
-            textPaint.color = Color.parseColor("#AAAAAA")
-            textPaint.textSize = 10f
-            canvas.drawText("${player.properties.size} territories", 190f, y + 5f, textPaint)
-            textPaint.textSize = 12f
-        }
-
-        textPaint.isFakeBoldText = false
+    fun cleanup() {
     }
 }
