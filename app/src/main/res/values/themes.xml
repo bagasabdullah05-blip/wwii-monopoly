@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.SnakeGame" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">#FF4CAF50</item>
-        <item name="colorPrimaryVariant">#FF2E7D32</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="android:statusBarColor">#FF0F0F23</item>
-        <item name="android:navigationBarColor">#FF0F0F23</item>
+    <style name="Theme.WWIIMonopoly" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">#FFD700</item>
+        <item name="android:colorPrimaryDark">#1A1A1A</item>
+        <item name="android:colorAccent">#4CAF50</item>
+        <item name="android:statusBarColor">#1A1A1A</item>
+        <item name="android:navigationBarColor">#1A1A1A</item>
+        <item name="android:windowBackground">#0D1B0D</item>
     </style>
 </resources>

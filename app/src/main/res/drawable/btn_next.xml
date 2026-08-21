@@ -5,6 +5,10 @@
         android:type="linear"
         android:angle="270"
         android:startColor="#FFD700"
-        android:endColor="#FFA000" />
-    <corners android:radius="8dp" />
+        android:centerColor="#FFC107"
+        android:endColor="#FF8F00" />
+    <stroke
+        android:width="2dp"
+        android:color="#FFE082" />
+    <corners android:radius="12dp" />
 </shape>

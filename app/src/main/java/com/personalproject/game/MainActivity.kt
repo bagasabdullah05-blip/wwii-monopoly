@@ -1,14 +1,14 @@
 package com.personalproject.game
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
 
     private lateinit var board: MonopolyBoard
     private lateinit var statusText: TextView
